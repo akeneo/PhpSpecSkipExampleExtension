@@ -75,6 +75,19 @@ function it_does_yield_stuff()
 }
 ```
 
+### @require class <fqcn>
+
+Skips the example if the class does not exist
+
+``` php
+/**
+ * @require class Foo\Bar
+ */
+function it_does_bar_stuff()
+{
+}
+```
+
 Contributions
 -------------
 
