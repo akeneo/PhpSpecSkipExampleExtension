@@ -49,6 +49,14 @@ class SkipExampleMaintainer implements MaintainerInterface
                 }
             }
 
+            if (preg_match('#@require class (.*)#', $tag, $match)) {
+                if (!class_exists($match[1])) {
+                    throw $this->createSkippingException(
+                        sprintf('Class "%s" is not available', $match[1])
+                    );
+                }
+            }
+
         }
     }
 

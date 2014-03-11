@@ -82,4 +82,18 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
 
         $this->shouldThrow('PhpSpec\Exception\Example\SkippingException')->duringPrepare($example, $specification, $matchers, $collaborators);
     }
+
+    function its_prepare_method_throws_skipping_exception_when_example_have_a_class_tag_that_does_not_exist(
+        ExampleNode $example,
+        SpecificationInterface $specification,
+        MatcherManager $matchers,
+        CollaboratorManager $collaborators,
+        \ReflectionFunctionAbstract $funcRefl
+    ) {
+        $example->getFunctionReflection()->willReturn($funcRefl);
+        $funcRefl->getDocComment()->willReturn("/**\n     * @require class Foo\\Bar\n     */");
+
+        $exception = new SkippingException('Class "Foo\\Bar" is not available');
+        $this->shouldThrow($exception)->duringPrepare($example, $specification, $matchers, $collaborators);
+    }
 }
