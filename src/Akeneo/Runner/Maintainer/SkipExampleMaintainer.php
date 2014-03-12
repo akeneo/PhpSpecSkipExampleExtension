@@ -103,7 +103,7 @@ class SkipExampleMaintainer implements MaintainerInterface
      *
      * @param ExampleNode $example
      *
-     * @return string
+     * @return string|false
      */
     protected function getDocComment(ExampleNode $example)
     {
