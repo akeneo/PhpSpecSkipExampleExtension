@@ -61,31 +61,29 @@ class SkipExampleMaintainer implements MaintainerInterface
      */
     protected function getRequiredInterfaces($docComment)
     {
-        $tags = array_filter(
-            array_map(
-                'trim',
-                explode(
-                    "\n",
-                    str_replace(
-                        "\r\n",
+        return array_map(
+            function($tag) {
+                preg_match('#@require interface (.*)#', $tag, $match);
+
+                return $match[1];
+            },
+            array_filter(
+                array_map(
+                    'trim',
+                    explode(
                         "\n",
-                        $docComment
+                        str_replace(
+                            "\r\n",
+                            "\n",
+                            $docComment
+                        )
                     )
-                )
-            ),
-            function($docline) {
-                return 0 === strpos($docline, '* @');
-            }
+                ),
+                function($docline) {
+                    return 0 === strpos($docline, '* @require interface');
+                }
+            )
         );
-
-        $interfaces = array();
-        foreach ($tags as $tag) {
-            if (preg_match('#@require interface (.*)#', $tag, $match)) {
-                $interfaces[] = $match[1];
-            }
-        }
-
-        return $interfaces;
     }
 
     /**
