@@ -36,55 +36,27 @@ extensions:
 Usage
 -----
 
-### @skip
+### @require interface <interface>
 
-Simply skip an example:
-
-``` php
-/**
- * @skip it is not runnable
- */
-function it_does_unrunnable_stuff()
-{
-}
-```
-
-### @require extension <name>
-
-Skips the example if the extension is not loaded
+Skips all the spec example if the interface is not available
 
 ``` php
 /**
- * @require extension mongo
+ * @require interface Vendor\Builder\ToolInterface
  */
-function it_does_mongo_stuff()
+class BridgeBuilderSpec extends ObjectBehavior
 {
-}
-```
+    // Will be skipped if the Vendor\Builder\ToolInterface interface does not exist
+    function it_builds_a_brige()
+    {
+    }
 
-### @require php <version constraint>
+    // Will be skipped if the Vendor\Builder\ToolInterface interface does not exist
+    function it_builds_the_road()
+    {
+    }
 
-Skips the example if the current php version does not validate the version constraint
-
-``` php
-/**
- * @require php >=5.5
- */
-function it_does_yield_stuff()
-{
-}
-```
-
-### @require class <fqcn>
-
-Skips the example if the class does not exist
-
-``` php
-/**
- * @require class Foo\Bar
- */
-function it_does_bar_stuff()
-{
+    //...
 }
 ```
 

@@ -3,12 +3,12 @@
 namespace spec\Akeneo\Runner\Maintainer;
 
 use PhpSpec\ObjectBehavior;
-use Prophecy\Argument;
 use PhpSpec\Loader\Node\ExampleNode;
 use PhpSpec\Exception\Example\SkippingException;
 use PhpSpec\SpecificationInterface;
 use PhpSpec\Runner\MatcherManager;
 use PhpSpec\Runner\CollaboratorManager;
+use PhpSpec\Loader\Node\SpecificationNode;
 
 class SkipExampleMaintainerSpec extends ObjectBehavior
 {
@@ -22,78 +22,43 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
         $this->getPriority()->shouldBe(75);
     }
 
-    function it_supports_example_that_has_doc_comment(
+    function it_supports_specification_that_has_doc_comment(
         ExampleNode $example,
-        \ReflectionFunctionAbstract $funcRefl
+        SpecificationNode $specification,
+        \ReflectionClass $refClass
     ) {
-        $example->getFunctionReflection()->willReturn($funcRefl);
-        $funcRefl->getDocComment()->willReturn('doc comment');
+        $example->getSpecification()->willReturn($specification);
+        $specification->getClassReflection()->willReturn($refClass);
+        $refClass->getDocComment()->willReturn('doc comment');
 
         $this->supports($example)->shouldBe(true);
     }
 
-    function it_does_not_support_example_that_does_not_have_doc_comment(
+    function it_does_not_support_specification_that_does_not_have_doc_comment(
         ExampleNode $example,
-        \ReflectionFunctionAbstract $funcRefl
+        SpecificationNode $specification,
+        \ReflectionClass $refClass
     ) {
-        $example->getFunctionReflection()->willReturn($funcRefl);
-        $funcRefl->getDocComment()->willReturn(false);
+        $example->getSpecification()->willReturn($specification);
+        $specification->getClassReflection()->willReturn($refClass);
+        $refClass->getDocComment()->willReturn(false);
 
         $this->supports($example)->shouldBe(false);
     }
 
-    function its_prepare_method_throws_skipping_exception_when_example_have_a_skip_tag(
+    function its_prepare_method_throws_skipping_exception_when_specification_require_a_non_existing_interface(
         ExampleNode $example,
-        SpecificationInterface $specification,
+        SpecificationNode $specification,
+        \ReflectionClass $refClass,
+        SpecificationInterface $context,
         MatcherManager $matchers,
-        CollaboratorManager $collaborators,
-        \ReflectionFunctionAbstract $funcRefl
+        CollaboratorManager $collaborators
     ) {
-        $example->getFunctionReflection()->willReturn($funcRefl);
-        $funcRefl->getDocComment()->willReturn("/**\n     * @skip it is unrunnable\n     */");
+        $example->getSpecification()->willReturn($specification);
+        $specification->getClassReflection()->willReturn($refClass);
+        $refClass->getDocComment()->willReturn("/**\n     * @require interface Foo\\Bar\n     */");
 
-        $exception = new SkippingException('it is unrunnable');
-        $this->shouldThrow($exception)->duringPrepare($example, $specification, $matchers, $collaborators);
-    }
-
-    function its_prepare_method_throws_skipping_exception_when_example_have_an_extension_tag_which_is_not_loaded(
-        ExampleNode $example,
-        SpecificationInterface $specification,
-        MatcherManager $matchers,
-        CollaboratorManager $collaborators,
-        \ReflectionFunctionAbstract $funcRefl
-    ) {
-        $example->getFunctionReflection()->willReturn($funcRefl);
-        $funcRefl->getDocComment()->willReturn("/**\n     * @require extension foobar\n     */");
-
-        $exception = new SkippingException('Extension "foobar" is not loaded');
-        $this->shouldThrow($exception)->duringPrepare($example, $specification, $matchers, $collaborators);
-    }
-
-    function its_prepare_method_throws_skipping_exception_when_example_have_a_php_tag_constraint_which_is_not_valid(
-        ExampleNode $example,
-        SpecificationInterface $specification,
-        MatcherManager $matchers,
-        CollaboratorManager $collaborators,
-        \ReflectionFunctionAbstract $funcRefl
-    ) {
-        $example->getFunctionReflection()->willReturn($funcRefl);
-        $funcRefl->getDocComment()->willReturn("/**\n     * @require php <5.3.3\n     */");
-
-        $this->shouldThrow('PhpSpec\Exception\Example\SkippingException')->duringPrepare($example, $specification, $matchers, $collaborators);
-    }
-
-    function its_prepare_method_throws_skipping_exception_when_example_have_a_class_tag_that_does_not_exist(
-        ExampleNode $example,
-        SpecificationInterface $specification,
-        MatcherManager $matchers,
-        CollaboratorManager $collaborators,
-        \ReflectionFunctionAbstract $funcRefl
-    ) {
-        $example->getFunctionReflection()->willReturn($funcRefl);
-        $funcRefl->getDocComment()->willReturn("/**\n     * @require class Foo\\Bar\n     */");
-
-        $exception = new SkippingException('Class "Foo\\Bar" is not available');
-        $this->shouldThrow($exception)->duringPrepare($example, $specification, $matchers, $collaborators);
+        $exception = new SkippingException('Interface "Foo\\Bar" is not available');
+        $this->shouldThrow($exception)->duringPrepare($example, $context, $matchers, $collaborators);
     }
 }

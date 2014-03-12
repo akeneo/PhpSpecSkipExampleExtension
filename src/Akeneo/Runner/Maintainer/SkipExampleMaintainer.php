@@ -16,7 +16,7 @@ class SkipExampleMaintainer implements MaintainerInterface
      */
     public function supports(ExampleNode $example)
     {
-        return false !== $example->getFunctionReflection()->getDocComment();
+        return false !== $this->getDocComment($example);
     }
 
     /**
@@ -25,38 +25,14 @@ class SkipExampleMaintainer implements MaintainerInterface
     public function prepare(ExampleNode $example, SpecificationInterface $context,
                             MatcherManager $matchers, CollaboratorManager $collaborators)
     {
-        foreach ($this->getTags($example) as $tag) {
-
-            if (preg_match('#@skip (.*)#', $tag, $match)) {
-                throw $this->createSkippingException($match[1]);
-            }
-
-            if (preg_match('#@require extension (\w+)#', $tag, $match)) {
-                if (!extension_loaded($match[1])) {
+        if ($docComment = $this->getDocComment($example)) {
+            foreach ($this->getRequiredInterfaces($docComment) as $interface) {
+                if (!interface_exists($interface)) {
                     throw $this->createSkippingException(
-                        sprintf('Extension "%s" is not loaded', $match[1])
+                        sprintf('Interface "%s" is not available', $interface)
                     );
                 }
             }
-
-            if (preg_match('#@require php (<=|<>|>=|>|==|=|!=|<)?(.*)$#', $tag, $match)) {
-                if (false === version_compare(PHP_VERSION, $match[2], $match[1])) {
-                    throw $this->createSkippingException(sprintf(
-                        'Current php version (%s) violates constraint "%s"',
-                        PHP_VERSION,
-                        $match[1].$match[2]
-                    ));
-                }
-            }
-
-            if (preg_match('#@require class (.*)#', $tag, $match)) {
-                if (!class_exists($match[1])) {
-                    throw $this->createSkippingException(
-                        sprintf('Class "%s" is not available', $match[1])
-                    );
-                }
-            }
-
         }
     }
 
@@ -77,13 +53,15 @@ class SkipExampleMaintainer implements MaintainerInterface
     }
 
     /**
-     * Get example tags
+     * Get required interfaces
+     *
+     * @param string $docComment
      *
      * @return array
      */
-    protected function getTags(ExampleNode $example)
+    protected function getRequiredInterfaces($docComment)
     {
-        return array_filter(
+        $tags = array_filter(
             array_map(
                 'trim',
                 explode(
@@ -91,7 +69,7 @@ class SkipExampleMaintainer implements MaintainerInterface
                     str_replace(
                         "\r\n",
                         "\n",
-                        $example->getFunctionReflection()->getDocComment()
+                        $docComment
                     )
                 )
             ),
@@ -99,6 +77,15 @@ class SkipExampleMaintainer implements MaintainerInterface
                 return 0 === strpos($docline, '* @');
             }
         );
+
+        $interfaces = array();
+        foreach ($tags as $tag) {
+            if (preg_match('#@require interface (.*)#', $tag, $match)) {
+                $interfaces[] = $match[1];
+            }
+        }
+
+        return $interfaces;
     }
 
     /**
@@ -111,5 +98,17 @@ class SkipExampleMaintainer implements MaintainerInterface
     protected function createSkippingException($message)
     {
         return new SkippingException($message);
+    }
+
+    /**
+     * Get spec doc comment
+     *
+     * @param ExampleNode $example
+     *
+     * @return string
+     */
+    protected function getDocComment(ExampleNode $example)
+    {
+        return $example->getSpecification()->getClassReflection()->getDocComment();
     }
 }
