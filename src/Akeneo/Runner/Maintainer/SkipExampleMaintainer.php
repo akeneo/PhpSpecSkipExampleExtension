@@ -28,7 +28,7 @@ class SkipExampleMaintainer implements MaintainerInterface
         if ($docComment = $this->getDocComment($example)) {
             foreach ($this->getRequiredInterfaces($docComment) as $interface) {
                 if (!interface_exists($interface)) {
-                    throw $this->createSkippingException(
+                    throw new SkippingException(
                         sprintf('Interface "%s" is not available', $interface)
                     );
                 }
@@ -84,18 +84,6 @@ class SkipExampleMaintainer implements MaintainerInterface
                 }
             )
         );
-    }
-
-    /**
-     * Create an instance of the skipping exception
-     *
-     * @param string $message
-     *
-     * @return SkippingException
-     */
-    protected function createSkippingException($message)
-    {
-        return new SkippingException($message);
     }
 
     /**
