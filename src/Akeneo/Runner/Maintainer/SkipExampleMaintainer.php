@@ -26,10 +26,10 @@ class SkipExampleMaintainer implements MaintainerInterface
                             MatcherManager $matchers, CollaboratorManager $collaborators)
     {
         if ($docComment = $this->getDocComment($example)) {
-            foreach ($this->getRequiredInterfaces($docComment) as $interface) {
-                if (!interface_exists($interface)) {
+            foreach ($this->getRequirements($docComment) as $requirement) {
+                if (!class_exists($requirement) && !interface_exists($requirement)) {
                     throw new SkippingException(
-                        sprintf('Interface "%s" is not available', $interface)
+                        sprintf('"%s" is not available', $requirement)
                     );
                 }
             }
@@ -59,11 +59,11 @@ class SkipExampleMaintainer implements MaintainerInterface
      *
      * @return array
      */
-    protected function getRequiredInterfaces($docComment)
+    protected function getRequirements($docComment)
     {
         return array_map(
             function($tag) {
-                preg_match('#@require interface (.*)#', $tag, $match);
+                preg_match('#@require ([^ ]*)#', $tag, $match);
 
                 return $match[1];
             },
@@ -80,7 +80,7 @@ class SkipExampleMaintainer implements MaintainerInterface
                     )
                 ),
                 function($docline) {
-                    return 0 === strpos($docline, '* @require interface');
+                    return 0 === strpos($docline, '* @require');
                 }
             )
         );

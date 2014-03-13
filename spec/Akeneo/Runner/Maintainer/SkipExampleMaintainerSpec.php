@@ -56,10 +56,25 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
     ) {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
-        $refClass->getDocComment()->willReturn("/**\n     * @require interface Foo\\Bar\n     */");
+        $refClass->getDocComment()->willReturn("/**\n     * @require Foo\\Bar\n     */");
 
-        $exception = new SkippingException('Interface "Foo\\Bar" is not available');
+        $exception = new SkippingException('"Foo\\Bar" is not available');
         $this->shouldThrow($exception)->duringPrepare($example, $context, $matchers, $collaborators);
+    }
+
+    function its_prepare_method_does_not_throw_exception_when_specification_requires_an_existing_class(
+        ExampleNode $example,
+        SpecificationNode $specification,
+        \ReflectionClass $refClass,
+        SpecificationInterface $context,
+        MatcherManager $matchers,
+        CollaboratorManager $collaborators
+    ) {
+        $example->getSpecification()->willReturn($specification);
+        $specification->getClassReflection()->willReturn($refClass);
+        $refClass->getDocComment()->willReturn("/**\n     * @require Akeneo\Runner\Maintainer\SkipExampleMaintainer\n     */");
+
+        $this->shouldNotThrow('PhpSpec\Exception\Example\SkippingException')->duringPrepare($example, $context, $matchers, $collaborators);
     }
 
     function its_prepare_method_does_not_throw_exception_when_specification_requires_an_existing_interface(
@@ -72,7 +87,7 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
     ) {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
-        $refClass->getDocComment()->willReturn("/**\n     * @require interface PhpSpec\Runner\Maintainer\MaintainerInterface\n     */");
+        $refClass->getDocComment()->willReturn("/**\n     * @require PhpSpec\Runner\Maintainer\MaintainerInterface\n     */");
 
         $this->shouldNotThrow('PhpSpec\Exception\Example\SkippingException')->duringPrepare($example, $context, $matchers, $collaborators);
     }

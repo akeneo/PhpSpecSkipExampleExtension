@@ -36,13 +36,13 @@ extensions:
 Usage
 -----
 
-### @require interface <interface>
+### @require <class or interface>
 
-Skips all the spec example if the interface is not available
+Skips all the spec example if the class or interface is not available
 
 ``` php
 /**
- * @require interface Vendor\Builder\ToolInterface
+ * @require Vendor\Builder\ToolInterface
  */
 class BridgeBuilderSpec extends ObjectBehavior
 {
