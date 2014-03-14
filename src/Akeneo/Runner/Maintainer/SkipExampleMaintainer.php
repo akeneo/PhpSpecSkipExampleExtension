@@ -16,7 +16,7 @@ class SkipExampleMaintainer implements MaintainerInterface
      */
     public function supports(ExampleNode $example)
     {
-        return false !== $example->getFunctionReflection()->getDocComment();
+        return false !== $this->getDocComment($example);
     }
 
     /**
@@ -25,38 +25,14 @@ class SkipExampleMaintainer implements MaintainerInterface
     public function prepare(ExampleNode $example, SpecificationInterface $context,
                             MatcherManager $matchers, CollaboratorManager $collaborators)
     {
-        foreach ($this->getTags($example) as $tag) {
-
-            if (preg_match('#@skip (.*)#', $tag, $match)) {
-                throw $this->createSkippingException($match[1]);
-            }
-
-            if (preg_match('#@require extension (\w+)#', $tag, $match)) {
-                if (!extension_loaded($match[1])) {
-                    throw $this->createSkippingException(
-                        sprintf('Extension "%s" is not loaded', $match[1])
+        if ($docComment = $this->getDocComment($example)) {
+            foreach ($this->getRequirements($docComment) as $requirement) {
+                if (!class_exists($requirement) && !interface_exists($requirement)) {
+                    throw new SkippingException(
+                        sprintf('"%s" is not available', $requirement)
                     );
                 }
             }
-
-            if (preg_match('#@require php (<=|<>|>=|>|==|=|!=|<)?(.*)$#', $tag, $match)) {
-                if (false === version_compare(PHP_VERSION, $match[2], $match[1])) {
-                    throw $this->createSkippingException(sprintf(
-                        'Current php version (%s) violates constraint "%s"',
-                        PHP_VERSION,
-                        $match[1].$match[2]
-                    ));
-                }
-            }
-
-            if (preg_match('#@require class (.*)#', $tag, $match)) {
-                if (!class_exists($match[1])) {
-                    throw $this->createSkippingException(
-                        sprintf('Class "%s" is not available', $match[1])
-                    );
-                }
-            }
-
         }
     }
 
@@ -77,39 +53,48 @@ class SkipExampleMaintainer implements MaintainerInterface
     }
 
     /**
-     * Get example tags
+     * Get required interfaces
+     *
+     * @param string $docComment
      *
      * @return array
      */
-    protected function getTags(ExampleNode $example)
+    protected function getRequirements($docComment)
     {
-        return array_filter(
-            array_map(
-                'trim',
-                explode(
-                    "\n",
-                    str_replace(
-                        "\r\n",
+        return array_map(
+            function($tag) {
+                preg_match('#@require ([^ ]*)#', $tag, $match);
+
+                return $match[1];
+            },
+            array_filter(
+                array_map(
+                    'trim',
+                    explode(
                         "\n",
-                        $example->getFunctionReflection()->getDocComment()
+                        str_replace(
+                            "\r\n",
+                            "\n",
+                            $docComment
+                        )
                     )
-                )
-            ),
-            function($docline) {
-                return 0 === strpos($docline, '* @');
-            }
+                ),
+                function($docline) {
+                    return 0 === strpos($docline, '* @require');
+                }
+            )
         );
     }
 
     /**
-     * Create an instance of the skipping exception
+     * Get spec doc comment
      *
-     * @param string $message
+     * @param ExampleNode $example
      *
-     * @return SkippingException
+     * @return string|false
      */
-    protected function createSkippingException($message)
+    protected function getDocComment(ExampleNode $example)
     {
-        return new SkippingException($message);
+        return $example->getSpecification()->getClassReflection()->getDocComment();
     }
 }
