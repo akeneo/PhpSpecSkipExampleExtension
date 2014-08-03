@@ -9,7 +9,7 @@
         }
     ],
     "require": {
-        "phpspec/phpspec": "dev-develop@dev"
+        "phpspec/phpspec": "dev-master@dev"
     },
     "autoload": {
         "psr-0": {
