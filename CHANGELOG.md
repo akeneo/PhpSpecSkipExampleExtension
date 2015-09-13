@@ -1,3 +1,8 @@
+# 1.2.0 (2015-09-13)
+
+## Improvements
+ - now depends on phpSpec ~2.1
+
 # 1.1.0 (2015-02-02)
 
 ## Improvements

@@ -12,13 +12,14 @@
         "phpspec/phpspec": "~2.1"
     },
     "autoload": {
-        "psr-4": {
-            "Akeneo\\": "src/"
+        "psr-0": {
+            "Akeneo": "src/"
         }
     },
     "config": {
         "bin-dir": "bin"
     },
+    "minimum-stability": "stable",
     "extra": {
         "branch-alias": {
             "dev-master": "1.1.x-dev",
