@@ -2,19 +2,24 @@
 
 namespace spec\Akeneo\Runner\Maintainer;
 
+use Akeneo\Runner\Maintainer\SkipExampleMaintainer;
 use PhpSpec\ObjectBehavior;
 use PhpSpec\Loader\Node\ExampleNode;
 use PhpSpec\Exception\Example\SkippingException;
-use PhpSpec\SpecificationInterface;
+use PhpSpec\Runner\Maintainer\Maintainer;
+use PhpSpec\Specification;
 use PhpSpec\Runner\MatcherManager;
 use PhpSpec\Runner\CollaboratorManager;
 use PhpSpec\Loader\Node\SpecificationNode;
 
+/**
+ * @mixin SkipExampleMaintainer
+ */
 class SkipExampleMaintainerSpec extends ObjectBehavior
 {
     function it_is_a_maintainer()
     {
-        $this->shouldImplement('PhpSpec\Runner\Maintainer\MaintainerInterface');
+        $this->shouldImplement(Maintainer::class);
     }
 
     function its_priority_is_75()
@@ -50,7 +55,7 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass,
-        SpecificationInterface $context,
+        Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
     ) {
@@ -66,7 +71,7 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass,
-        SpecificationInterface $context,
+        Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
     ) {
@@ -81,13 +86,13 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass,
-        SpecificationInterface $context,
+        Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
     ) {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
-        $refClass->getDocComment()->willReturn("/**\n     * @require PhpSpec\Runner\Maintainer\MaintainerInterface\n     */");
+        $refClass->getDocComment()->willReturn("/**\n     * @require PhpSpec\Runner\Maintainer\Maintainer\n     */");
 
         $this->shouldNotThrow('PhpSpec\Exception\Example\SkippingException')->duringPrepare($example, $context, $matchers, $collaborators);
     }
@@ -96,7 +101,7 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass,
-        SpecificationInterface $context,
+        Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
     ){

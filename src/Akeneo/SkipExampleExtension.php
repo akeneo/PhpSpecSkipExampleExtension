@@ -2,16 +2,27 @@
 
 namespace Akeneo;
 
-use PhpSpec\Extension\ExtensionInterface;
-use PhpSpec\ServiceContainer;
 use Akeneo\Runner;
+use PhpSpec\Extension;
+use PhpSpec\ServiceContainer;
+use PhpSpec\ServiceContainer\IndexedServiceContainer;
 
-class SkipExampleExtension implements ExtensionInterface
+class SkipExampleExtension implements Extension
 {
-    public function load(ServiceContainer $container)
+    /**
+     * {@inheritdoc}
+     */
+    public function load(ServiceContainer $container, array $params)
     {
-        $container->set('runner.maintainers.skip_example', function ($c) {
+        if (!$container instanceof IndexedServiceContainer) {
+            throw new \InvalidArgumentException(sprintf(
+                'Container passed from phpspec must implement "%s"!',
+                IndexedServiceContainer::class
+            ));
+        }
+
+        $container->define('runner.maintainers.skip_example', function (IndexedServiceContainer $c) {
             return new Runner\Maintainer\SkipExampleMaintainer();
-        });
+        }, ['runner.maintainers']);
     }
 }
