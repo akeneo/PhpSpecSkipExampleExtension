@@ -2,14 +2,14 @@
 
 namespace Akeneo\Runner\Maintainer;
 
-use PhpSpec\Runner\Maintainer\MaintainerInterface;
+use PhpSpec\Runner\Maintainer\Maintainer;
 use PhpSpec\Loader\Node\ExampleNode;
-use PhpSpec\SpecificationInterface;
+use PhpSpec\Specification;
 use PhpSpec\Runner\MatcherManager;
 use PhpSpec\Runner\CollaboratorManager;
 use PhpSpec\Exception\Example\SkippingException;
 
-class SkipExampleMaintainer implements MaintainerInterface
+class SkipExampleMaintainer implements Maintainer
 {
     /**
      * {@inheritdoc}
@@ -22,7 +22,7 @@ class SkipExampleMaintainer implements MaintainerInterface
     /**
      * {@inheritdoc}
      */
-    public function prepare(ExampleNode $example, SpecificationInterface $context,
+    public function prepare(ExampleNode $example, Specification $context,
                             MatcherManager $matchers, CollaboratorManager $collaborators)
     {
         if ($docComment = $this->getDocComment($example)) {
@@ -39,7 +39,7 @@ class SkipExampleMaintainer implements MaintainerInterface
     /**
      * {@inheritdoc}
      */
-    public function teardown(ExampleNode $example, SpecificationInterface $context,
+    public function teardown(ExampleNode $example, Specification $context,
                              MatcherManager $matchers, CollaboratorManager $collaborators)
     {
     }
