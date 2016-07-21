@@ -17,6 +17,7 @@ Using phpspec 2.x,
         "akeneo/phpspec-skip-example-extension": "1.0.*"
     }
 }
+```
 
 Using phpspec 3.x,
 
@@ -26,6 +27,7 @@ Using phpspec 3.x,
         "akeneo/phpspec-skip-example-extension": "2.0.*"
     }
 }
+```
 
 And run composer update:
 
