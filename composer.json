@@ -6,6 +6,10 @@
         {
             "name": "Gildas Quéméner",
             "email": "gildas@akeneo.com"
+        },
+        {
+            "name": "Nicolas Dupont",
+            "email": "nicolas@akeneo.com"
         }
     ],
     "require": {

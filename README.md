@@ -9,13 +9,23 @@ Installation
 
 Once you have installed PhpSpec (following the documentation on [the official website](http://www.phpspec.net)), add the extension requirement to your `composer.json`:
 
+Using phpspec 2.x,
+
 ``` json
 {
     "require": {
-        "akeneo/phpspec-skip-example-extension": "1.0.*@dev"
+        "akeneo/phpspec-skip-example-extension": "1.0.*"
     }
 }
-```
+
+Using phpspec 3.x,
+
+``` json
+{
+    "require": {
+        "akeneo/phpspec-skip-example-extension": "2.0.*"
+    }
+}
 
 And run composer update:
 
@@ -30,7 +40,7 @@ You can now activate the extension by creating a `phpspec.yml` file at the root 
 
 ``` yaml
 extensions:
-    - Akeneo\SkipExampleExtension
+    Akeneo\SkipExampleExtension: ~
 ```
 
 Usage
