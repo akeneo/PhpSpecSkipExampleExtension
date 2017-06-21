@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akeneo\Runner\Maintainer;
 
 use PhpSpec\Runner\Maintainer\Maintainer;
@@ -9,29 +11,30 @@ use PhpSpec\Runner\MatcherManager;
 use PhpSpec\Runner\CollaboratorManager;
 use PhpSpec\Exception\Example\SkippingException;
 
-class SkipExampleMaintainer implements Maintainer
+final class SkipExampleMaintainer implements Maintainer
 {
     /**
      * {@inheritdoc}
      */
-    public function supports(ExampleNode $example)
+    public function supports(ExampleNode $example): bool
     {
-        return false !== $this->getDocComment($example);
+        return count($this->getRequirements($this->getDocComment($example))) > 0;
     }
 
     /**
      * {@inheritdoc}
      */
-    public function prepare(ExampleNode $example, Specification $context,
-                            MatcherManager $matchers, CollaboratorManager $collaborators)
-    {
-        if ($docComment = $this->getDocComment($example)) {
-            foreach ($this->getRequirements($docComment) as $requirement) {
-                if (!class_exists($requirement) && !interface_exists($requirement)) {
-                    throw new SkippingException(
-                        sprintf('"%s" is not available', $requirement)
-                    );
-                }
+    public function prepare(
+        ExampleNode $example,
+        Specification $context,
+        MatcherManager $matchers,
+        CollaboratorManager $collaborators
+    ) {
+        foreach ($this->getRequirements($this->getDocComment($example)) as $requirement) {
+            if (!class_exists($requirement) && !interface_exists($requirement)) {
+                throw new SkippingException(
+                    sprintf('"%s" is not available', $requirement)
+                );
             }
         }
     }
@@ -39,15 +42,19 @@ class SkipExampleMaintainer implements Maintainer
     /**
      * {@inheritdoc}
      */
-    public function teardown(ExampleNode $example, Specification $context,
-                             MatcherManager $matchers, CollaboratorManager $collaborators)
-    {
+    public function teardown(
+        ExampleNode $example,
+        Specification $context,
+        MatcherManager $matchers,
+        CollaboratorManager $collaborators
+    ) {
+
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getPriority()
+    public function getPriority(): int
     {
         return 75;
     }
@@ -59,7 +66,7 @@ class SkipExampleMaintainer implements Maintainer
      *
      * @return array
      */
-    protected function getRequirements($docComment)
+    protected function getRequirements(string $docComment): array
     {
         return array_map(
             function($tag) {
@@ -91,10 +98,10 @@ class SkipExampleMaintainer implements Maintainer
      *
      * @param ExampleNode $example
      *
-     * @return string|false
+     * @return string
      */
-    protected function getDocComment(ExampleNode $example)
+    protected function getDocComment(ExampleNode $example): string
     {
-        return $example->getSpecification()->getClassReflection()->getDocComment();
+        return $example->getSpecification()->getClassReflection()->getDocComment() ?: '';
     }
 }
