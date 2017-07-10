@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Akeneo;
 
 use Akeneo\Runner;
@@ -7,7 +9,7 @@ use PhpSpec\Extension;
 use PhpSpec\ServiceContainer;
 use PhpSpec\ServiceContainer\IndexedServiceContainer;
 
-class SkipExampleExtension implements Extension
+final class SkipExampleExtension implements Extension
 {
     /**
      * {@inheritdoc}

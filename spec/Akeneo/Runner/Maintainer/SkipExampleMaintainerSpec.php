@@ -1,5 +1,7 @@
 <?php
 
+declare(strict_types=1);
+
 namespace spec\Akeneo\Runner\Maintainer;
 
 use Akeneo\Runner\Maintainer\SkipExampleMaintainer;
@@ -15,7 +17,7 @@ use PhpSpec\Loader\Node\SpecificationNode;
 /**
  * @mixin SkipExampleMaintainer
  */
-class SkipExampleMaintainerSpec extends ObjectBehavior
+final class SkipExampleMaintainerSpec extends ObjectBehavior
 {
     function it_is_a_maintainer()
     {
@@ -27,14 +29,14 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
         $this->getPriority()->shouldBe(75);
     }
 
-    function it_supports_specification_that_has_doc_comment(
+    function it_supports_specification_that_has_require_doc_comment(
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass
     ) {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
-        $refClass->getDocComment()->willReturn('doc comment');
+        $refClass->getDocComment()->willReturn("/**\n     * @require Foo\\Bar\n     */");
 
         $this->supports($example)->shouldBe(true);
     }
@@ -79,7 +81,7 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn("/**\n     * @require Akeneo\Runner\Maintainer\SkipExampleMaintainer\n     */");
 
-        $this->shouldNotThrow('PhpSpec\Exception\Example\SkippingException')->duringPrepare($example, $context, $matchers, $collaborators);
+        $this->shouldNotThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
     }
 
     function its_prepare_method_does_not_throw_exception_when_specification_requires_an_existing_interface(
@@ -94,7 +96,7 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn("/**\n     * @require PhpSpec\Runner\Maintainer\Maintainer\n     */");
 
-        $this->shouldNotThrow('PhpSpec\Exception\Example\SkippingException')->duringPrepare($example, $context, $matchers, $collaborators);
+        $this->shouldNotThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
     }
 
     function its_prepare_method_ignores_other_annotation(
@@ -104,11 +106,11 @@ class SkipExampleMaintainerSpec extends ObjectBehavior
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
-    ){
+    ) {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn("/**\n     * @author foo@example.com \n     */");
 
-        $this->shouldNotThrow('PhpSpec\Exception\Example\SkippingException')->duringPrepare($example, $context, $matchers, $collaborators);
+        $this->shouldNotThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
     }
 }
