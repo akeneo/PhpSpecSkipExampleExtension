@@ -14,7 +14,7 @@ Using phpspec 2.x,
 ``` json
 {
     "require": {
-        "akeneo/phpspec-skip-example-extension": "1.0.*"
+        "akeneo/phpspec-skip-example-extension": "^1.0"
     }
 }
 ```
@@ -24,7 +24,17 @@ Using phpspec 3.x,
 ``` json
 {
     "require": {
-        "akeneo/phpspec-skip-example-extension": "2.0.*"
+        "akeneo/phpspec-skip-example-extension": "^2.0"
+    }
+}
+```
+
+Using phpspec 4.x,
+
+``` json
+{
+    "require": {
+        "akeneo/phpspec-skip-example-extension": "^3.0"
     }
 }
 ```
