@@ -27,7 +27,7 @@
     "config": {
         "bin-dir": "bin"
     },
-    "minimum-stability": "alpha",
+    "minimum-stability": "stable",
     "extra": {
         "branch-alias": {
             "dev-master": "3.0.x-dev",
