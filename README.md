@@ -9,32 +9,22 @@ Installation
 
 Once you have installed PhpSpec (following the documentation on [the official website](http://www.phpspec.net)), add the extension requirement to your `composer.json`:
 
-Using phpspec 2.x,
-
-``` json
-{
-    "require": {
-        "akeneo/phpspec-skip-example-extension": "^1.0"
-    }
-}
-```
-
-Using phpspec 3.x,
-
-``` json
-{
-    "require": {
-        "akeneo/phpspec-skip-example-extension": "^2.0"
-    }
-}
-```
-
 Using phpspec 4.x,
 
 ``` json
 {
     "require": {
         "akeneo/phpspec-skip-example-extension": "^3.0"
+    }
+}
+```
+
+Using phpspec 5.x,
+
+``` json
+{
+    "require": {
+        "akeneo/phpspec-skip-example-extension": "^4.0"
     }
 }
 ```

@@ -14,7 +14,7 @@ final class SkipExampleExtension implements Extension
     /**
      * {@inheritdoc}
      */
-    public function load(ServiceContainer $container, array $params)
+    public function load(ServiceContainer $container, array $params): void
     {
         if (!$container instanceof IndexedServiceContainer) {
             throw new \InvalidArgumentException(sprintf(

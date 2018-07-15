@@ -19,12 +19,12 @@ use PhpSpec\Loader\Node\SpecificationNode;
  */
 final class SkipExampleMaintainerSpec extends ObjectBehavior
 {
-    function it_is_a_maintainer()
+    function it_is_a_maintainer(): void
     {
         $this->shouldImplement(Maintainer::class);
     }
 
-    function its_priority_is_75()
+    function its_priority_is_75(): void
     {
         $this->getPriority()->shouldBe(75);
     }
@@ -33,7 +33,7 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass
-    ) {
+    ): void {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn("/**\n     * @require Foo\\Bar\n     */");
@@ -45,7 +45,7 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass
-    ) {
+    ): void {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn(false);
@@ -60,7 +60,7 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
-    ) {
+    ): void {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn("/**\n     * @require Foo\\Bar\n     */");
@@ -76,7 +76,7 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
-    ) {
+    ): void {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn("/**\n     * @require Akeneo\Runner\Maintainer\SkipExampleMaintainer\n     */");
@@ -91,7 +91,7 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
-    ) {
+    ): void {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn("/**\n     * @require PhpSpec\Runner\Maintainer\Maintainer\n     */");
@@ -106,7 +106,7 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
-    ) {
+    ): void {
         $example->getSpecification()->willReturn($specification);
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn("/**\n     * @author foo@example.com \n     */");

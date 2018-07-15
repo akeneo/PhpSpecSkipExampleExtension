@@ -1,10 +1,14 @@
+# 4.0.x (2017-07-16)
+
+ - now depends on phpSpec ^5.0
+
 # 3.0.x (2017-07-10)
 
- - now depends on phpSpec ^4.*
+ - now depends on phpSpec ^4.0
 
 # 2.0.x (2016-07-20)
 
- - now depends on phpSpec ^3.*
+ - now depends on phpSpec ^3.0
 
 # 1.2.0 (2015-09-13)
 
