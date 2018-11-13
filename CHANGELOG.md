@@ -1,23 +1,25 @@
-# 3.0.x (2017-07-10)
+# Changes in PhpSpec Skip Example Extension
 
- - now depends on phpSpec ^4.*
+## 4.0.x (2018-11-13)
 
-# 2.0.x (2016-07-20)
+- now depends on phpSpec ^5.0
 
- - now depends on phpSpec ^3.*
+## 3.0.x (2017-07-10)
 
-# 1.2.0 (2015-09-13)
+- now depends on phpSpec ^4.0
 
-## Improvements
- - now depends on phpSpec ~2.1
+## 2.0.x (2016-07-20)
 
-# 1.1.0 (2015-02-02)
+- now depends on phpSpec ^3.0
 
-## Improvements
- - now depends on phpSpec 2.0.*
+## 1.2.0 (2015-09-13)
 
-# 1.0.1 (2014-09-18)
+- now depends on phpSpec ~2.1
 
-## Improvements
- - now depends on phpSpec 2.0.1-RC1
+## 1.1.0 (2015-02-02)
 
+- now depends on phpSpec 2.0.*
+
+## 1.0.1 (2014-09-18)
+
+- now depends on phpSpec 2.0.1-RC1

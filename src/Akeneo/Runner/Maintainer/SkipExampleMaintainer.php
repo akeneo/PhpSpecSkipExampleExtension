@@ -29,7 +29,7 @@ final class SkipExampleMaintainer implements Maintainer
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
-    ) {
+    ): void {
         foreach ($this->getRequirements($this->getDocComment($example)) as $requirement) {
             if (!class_exists($requirement) && !interface_exists($requirement)) {
                 throw new SkippingException(
@@ -47,7 +47,7 @@ final class SkipExampleMaintainer implements Maintainer
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
-    ) {
+    ): void {
 
     }
 
@@ -66,7 +66,7 @@ final class SkipExampleMaintainer implements Maintainer
      *
      * @return array
      */
-    protected function getRequirements(string $docComment): array
+    private function getRequirements(string $docComment): array
     {
         return array_map(
             function($tag) {
@@ -100,7 +100,7 @@ final class SkipExampleMaintainer implements Maintainer
      *
      * @return string
      */
-    protected function getDocComment(ExampleNode $example): string
+    private function getDocComment(ExampleNode $example): string
     {
         return $example->getSpecification()->getClassReflection()->getDocComment() ?: '';
     }
