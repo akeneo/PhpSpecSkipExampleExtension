@@ -17,7 +17,7 @@
         }
     ],
     "require": {
-        "phpspec/phpspec": "^5.0"
+        "phpspec/phpspec": "^6.1"
     },
     "autoload": {
         "psr-0": {
