@@ -51,16 +51,28 @@ Skips all the spec example if the class or interface is not available
 ```php
 /**
  * @require Vendor\Builder\ToolInterface
+ * 
+ * All examples will be skipped if the ToolInterface does not exist
  */
-class BridgeBuilderSpec extends ObjectBehavior
+class LondonBridgeBuilderSpec extends ObjectBehavior
 {
-    // Will be skipped if the Vendor\Builder\ToolInterface interface does not exist
-    function it_builds_a_brige()
+    /**
+     * @require Vendor\Manufacturer\StoneFactory
+     * @require Vendor\Manufacturer\BrickFactory
+     * 
+     * Will be skipped if the ToolInterface OR StoneFactory OR BrickFacroty does not exist
+     */
+    function it_builds_a_stone_brige()
     {
     }
 
-    // Will be skipped if the Vendor\Builder\ToolInterface interface does not exist
-    function it_builds_the_road()
+    /**
+     * @require Vendor\Manufacturer\WoodFactory
+     * @require Vendor\Manufacturer\ClayFactory
+     * 
+     * Will be skipped if the ToolInterface OR WoodFactory OR ClayFactory does not exist
+     */
+    function it_builds_a_wooden_bridge()
     {
     }
 

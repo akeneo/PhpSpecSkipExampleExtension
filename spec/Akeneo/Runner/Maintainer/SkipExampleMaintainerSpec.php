@@ -19,6 +19,10 @@ use PhpSpec\Loader\Node\SpecificationNode;
  */
 final class SkipExampleMaintainerSpec extends ObjectBehavior
 {
+    const MISSING_REQUIRE    = "/**\n     * @require Foo\\Bar\n     */";
+    const EXISTING_CLASS     = "/**\n     * @require Akeneo\Runner\Maintainer\SkipExampleMaintainer\n     */";
+    const EXISTING_INTERFACE = "/**\n     * @require PhpSpec\Runner\Maintainer\Maintainer\n     */";
+
     function it_is_a_maintainer(): void
     {
         $this->shouldImplement(Maintainer::class);
@@ -29,26 +33,51 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         $this->getPriority()->shouldBe(75);
     }
 
-    function it_supports_specification_that_has_require_doc_comment(
+    function it_supports_specification_that_has_require_class_doc_comment(
         ExampleNode $example,
         SpecificationNode $specification,
-        \ReflectionClass $refClass
+        \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod
     ): void {
         $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
         $specification->getClassReflection()->willReturn($refClass);
-        $refClass->getDocComment()->willReturn("/**\n     * @require Foo\\Bar\n     */");
+
+        $refClass->getDocComment()->willReturn(self::MISSING_REQUIRE);
+        $refMethod->getDocComment()->willReturn(false);
 
         $this->supports($example)->shouldBe(true);
     }
 
-    function it_does_not_support_specification_that_does_not_have_doc_comment(
+    function it_supports_example_node_that_has_require_method_doc_comment(
         ExampleNode $example,
         SpecificationNode $specification,
-        \ReflectionClass $refClass
+        \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod
     ): void {
         $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
         $specification->getClassReflection()->willReturn($refClass);
+
         $refClass->getDocComment()->willReturn(false);
+        $refMethod->getDocComment()->willReturn(self::MISSING_REQUIRE);
+
+        $this->supports($example)->shouldBe(true);
+    }
+
+    function it_does_not_support_specification_that_does_not_have_any_doc_comment(
+        ExampleNode $example,
+        SpecificationNode $specification,
+        \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod
+    ): void {
+        $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
+
+        $specification->getClassReflection()->willReturn($refClass);
+
+        $refClass->getDocComment()->willReturn(false);
+        $refMethod->getDocComment()->willReturn(false);
 
         $this->supports($example)->shouldBe(false);
     }
@@ -57,13 +86,16 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod,
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
     ): void {
         $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
         $specification->getClassReflection()->willReturn($refClass);
-        $refClass->getDocComment()->willReturn("/**\n     * @require Foo\\Bar\n     */");
+        $refClass->getDocComment()->willReturn(self::MISSING_REQUIRE);
+        $refMethod->getDocComment()->willReturn(self::EXISTING_INTERFACE);
 
         $exception = new SkippingException('"Foo\\Bar" is not available');
         $this->shouldThrow($exception)->duringPrepare($example, $context, $matchers, $collaborators);
@@ -73,13 +105,36 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod,
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
     ): void {
         $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
         $specification->getClassReflection()->willReturn($refClass);
-        $refClass->getDocComment()->willReturn("/**\n     * @require Akeneo\Runner\Maintainer\SkipExampleMaintainer\n     */");
+
+        $refClass->getDocComment()->willReturn(self::EXISTING_CLASS);
+        $refMethod->getDocComment()->willReturn(false);
+
+        $this->shouldNotThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
+    }
+
+    function its_prepare_method_does_not_throw_exception_when_example_node_requires_an_existing_class(
+        ExampleNode $example,
+        SpecificationNode $specification,
+        \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod,
+        Specification $context,
+        MatcherManager $matchers,
+        CollaboratorManager $collaborators
+    ): void {
+        $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
+        $specification->getClassReflection()->willReturn($refClass);
+
+        $refClass->getDocComment()->willReturn(false);
+        $refMethod->getDocComment()->willReturn(self::EXISTING_CLASS);
 
         $this->shouldNotThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
     }
@@ -88,28 +143,89 @@ final class SkipExampleMaintainerSpec extends ObjectBehavior
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod,
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
     ): void {
         $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
         $specification->getClassReflection()->willReturn($refClass);
-        $refClass->getDocComment()->willReturn("/**\n     * @require PhpSpec\Runner\Maintainer\Maintainer\n     */");
+        $refClass->getDocComment()->willReturn(self::EXISTING_INTERFACE);
+        $refMethod->getDocComment()->willReturn(false);
 
         $this->shouldNotThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
+    }
+
+    function its_prepare_method_does_not_throw_exception_when_example_node_requires_an_existing_interface(
+        ExampleNode $example,
+        SpecificationNode $specification,
+        \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod,
+        Specification $context,
+        MatcherManager $matchers,
+        CollaboratorManager $collaborators
+    ): void {
+        $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
+        $specification->getClassReflection()->willReturn($refClass);
+
+        $refClass->getDocComment()->willReturn(false);
+        $refMethod->getDocComment()->willReturn(self::EXISTING_INTERFACE);
+
+        $this->shouldNotThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
+    }
+
+    function its_prepare_method_throw_exception_when_specification_requires_an_existing_class_but_example_node_requires_an_missing_class(
+        ExampleNode $example,
+        SpecificationNode $specification,
+        \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod,
+        Specification $context,
+        MatcherManager $matchers,
+        CollaboratorManager $collaborators
+    ): void {
+        $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
+        $specification->getClassReflection()->willReturn($refClass);
+        $refClass->getDocComment()->willReturn(self::EXISTING_CLASS);
+        $refMethod->getDocComment()->willReturn(self::MISSING_REQUIRE);
+
+        $this->shouldThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
+    }
+
+    function its_prepare_method_throw_exception_when_specification_requires_an_missing_class_but_example_node_requires_an_existing_class(
+        ExampleNode $example,
+        SpecificationNode $specification,
+        \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod,
+        Specification $context,
+        MatcherManager $matchers,
+        CollaboratorManager $collaborators
+    ): void {
+        $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
+        $specification->getClassReflection()->willReturn($refClass);
+        $refClass->getDocComment()->willReturn(self::MISSING_REQUIRE);
+        $refMethod->getDocComment()->willReturn(self::EXISTING_CLASS);
+
+        $this->shouldThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
     }
 
     function its_prepare_method_ignores_other_annotation(
         ExampleNode $example,
         SpecificationNode $specification,
         \ReflectionClass $refClass,
+        \ReflectionFunction $refMethod,
         Specification $context,
         MatcherManager $matchers,
         CollaboratorManager $collaborators
     ): void {
         $example->getSpecification()->willReturn($specification);
+        $example->getFunctionReflection()->willReturn($refMethod);
         $specification->getClassReflection()->willReturn($refClass);
         $refClass->getDocComment()->willReturn("/**\n     * @author foo@example.com \n     */");
+        $refMethod->getDocComment()->willReturn("/**\n     * @author foo@example.com \n     */");
 
         $this->shouldNotThrow(SkippingException::class)->duringPrepare($example, $context, $matchers, $collaborators);
     }

@@ -18,7 +18,10 @@ final class SkipExampleMaintainer implements Maintainer
      */
     public function supports(ExampleNode $example): bool
     {
-        return count($this->getRequirements($this->getDocComment($example))) > 0;
+        $specDocComments = $this->getSpecDocComment($example);
+        $exampleDocCommnts = $this->getExampleDocComment($example);
+
+        return count($this->getRequirements($specDocComments . $exampleDocCommnts)) > 0;
     }
 
     /**
@@ -30,7 +33,15 @@ final class SkipExampleMaintainer implements Maintainer
         MatcherManager $matchers,
         CollaboratorManager $collaborators
     ): void {
-        foreach ($this->getRequirements($this->getDocComment($example)) as $requirement) {
+
+        $specRequirements = $this->getRequirements($this->getSpecDocComment($example));
+        $exampleRequirements = $this->getRequirements($this->getExampleDocComment($example));
+
+        // Push example node requirement to the end of check list,
+        // if any spec class requirements are missing, all example node will not be executed as well.
+        $requirements = \array_merge($specRequirements, $exampleRequirements);
+
+        foreach ($requirements as $requirement) {
             if (!class_exists($requirement) && !interface_exists($requirement)) {
                 throw new SkippingException(
                     sprintf('"%s" is not available', $requirement)
@@ -100,8 +111,20 @@ final class SkipExampleMaintainer implements Maintainer
      *
      * @return string
      */
-    private function getDocComment(ExampleNode $example): string
+    private function getSpecDocComment(ExampleNode $example): string
     {
         return $example->getSpecification()->getClassReflection()->getDocComment() ?: '';
+    }
+
+    /**
+     * Get example node doc comment
+     * 
+     * @param ExampleNode $example
+     * 
+     * @return string
+     */
+    private function getExampleDocComment(ExampleNode $example): string
+    {
+        return $example->getFunctionReflection()->getDocComment() ?: '';
     }
 }
